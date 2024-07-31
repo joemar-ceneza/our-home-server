@@ -1,6 +1,7 @@
+// import dependencies
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const connectToDb = require("./config/connectToDb");
 require("dotenv").config();
 
 const app = express();
@@ -10,18 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// connect to mongodb
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.DB_URL);
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Could not connect to MongoDB", error);
-  }
-};
-
-// call the function to connect to the database
-connectDB();
+// connect to database
+connectToDb();
 
 // define routes
 app.get("/", (req, res) => {
