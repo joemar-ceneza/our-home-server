@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const connectToDb = require("./config/connectToDb");
+const categoryRoutes = require("./routes/category");
 require("dotenv").config();
 
 const app = express();
@@ -18,6 +19,9 @@ connectToDb();
 app.get("/", (req, res) => {
   res.send("Hello from the MERN stack server!");
 });
+
+// use the category routes
+app.use("/api/categories", categoryRoutes);
 
 // start the server
 app.listen(PORT, () => {
