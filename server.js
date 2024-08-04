@@ -1,9 +1,11 @@
+// load environment variables from the .env file
+require("dotenv").config();
+
 // import dependencies
 const express = require("express");
 const cors = require("cors");
 const connectToDb = require("./config/connectToDb");
 const categoryRoutes = require("./routes/category");
-require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
