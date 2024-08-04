@@ -1,14 +1,22 @@
 const express = require("express");
 const Category = require("../models/category");
+const upload = require("../middleware/multer");
 
 const router = express.Router();
 
-// create new category
-router.post("/", async (req, res) => {
+// create new category with image upload
+router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const category = new Category(req.body);
-    await category.save();
-    res.status(201).json(category);
+    const { name, description } = req.body;
+    const imageUrl = req.file ? req.file.path : undefined;
+
+    const newCategory = new Category({
+      name,
+      description,
+      image: imageUrl,
+    });
+    const savedCategory = await newCategory.save();
+    res.status(201).json(savedCategory);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
