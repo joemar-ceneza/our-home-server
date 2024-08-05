@@ -8,12 +8,11 @@ const router = express.Router();
 // create new category with image upload
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
 
     const newCategory = new Category({
       name,
-      description,
       image: imageUrl,
     });
     const savedCategory = await newCategory.save();
@@ -51,16 +50,62 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// update a category by ID
-router.put("/:id", async (req, res) => {
+// update a category by ID with image upload
+router.put("/:id", upload.single("image"), async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const { name, description } = req.body;
+    const imageUrl = req.file ? req.file.path : undefined;
+
+    // Find the category by ID
+    let category = await Category.findById(req.params.id);
     if (!category) return res.status(404).json({ error: "Category not found" });
-    res.json(category);
+
+    // Update fields
+    if (name) {
+      category.name = name;
+      category.slug = name
+        .toLowerCase()
+        .replace(/ /g, "-")
+        .replace(/[^\w-]+/g, "");
+    }
+    if (description) category.description = description;
+
+    if (imageUrl) {
+      // Extract public ID from the old image URL
+      if (category.image) {
+        const publicId = category.image
+          .split("/")
+          .slice(-2)
+          .join("/")
+          .split(".")[0];
+        try {
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error("Error deleting old image from Cloudinary:", err);
+          return res
+            .status(500)
+            .json({ error: "Failed to delete old image from Cloudinary" });
+        }
+      }
+      // Set new image URL
+      category.image = imageUrl;
+    }
+
+    const updatedCategory = await category.save();
+    res.json(updatedCategory);
   } catch (error) {
+    // Handle errors and clean up if needed
+    if (req.file && req.file.path) {
+      const publicId = req.file.filename.split(".")[0];
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error(
+          "Error deleting new image from Cloudinary after update failed:",
+          err
+        );
+      }
+    }
     res.status(400).json({ error: error.message });
   }
 });
