@@ -1,4 +1,5 @@
 const express = require("express");
+const cloudinary = require("cloudinary").v2;
 const Category = require("../models/category");
 const upload = require("../middleware/multer");
 
@@ -18,6 +19,13 @@ router.post("/", upload.single("image"), async (req, res) => {
     const savedCategory = await newCategory.save();
     res.status(201).json(savedCategory);
   } catch (error) {
+    // delete the uploaded image from cloudinary if an error occurs
+    if (req.file && req.file.path) {
+      const publicId = req.file.filename.split(".")[0]; // Extract the public ID from the filename
+      cloudinary.uploader.destroy(publicId, (err, result) => {
+        if (err) console.error("Error deleting image from Cloudinary:", err);
+      });
+    }
     res.status(400).json({ error: error.message });
   }
 });
