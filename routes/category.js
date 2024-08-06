@@ -8,12 +8,13 @@ const router = express.Router();
 // create new category with image upload
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
 
     const newCategory = new Category({
       name,
       image: imageUrl,
+      products,
     });
     const savedCategory = await newCategory.save();
     res.status(201).json(savedCategory);

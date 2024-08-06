@@ -13,18 +13,19 @@ const categorySchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    description: {
-      type: String,
-      trim: true,
-      maxlength: 200,
-    },
     image: {
       type: String, // url to the product image
       required: true,
     },
+    products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product", // reference to the product model
+      },
+    ],
   },
   {
-    timestamps: true, // Automatically add createAt and UpdateAt fields
+    timestamps: true, // automatically and createAt and updateAt fields
   }
 );
 
