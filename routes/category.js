@@ -113,9 +113,30 @@ router.put("/:id", upload.single("image"), async (req, res) => {
 // delete a category by ID
 router.delete("/:id", async (req, res) => {
   try {
-    const category = await Category.findByIdAndDelete(req.params.id);
-    if (!category) return res.status(400).json({ error: "Category not found" });
-    res.json({ message: "Category deleted" });
+    // Find the category by ID
+    const category = await Category.findById(req.params.id);
+    if (!category) return res.status(404).json({ error: "Category not found" });
+
+    // Extract public ID from the image URL if the category has an image
+    if (category.image) {
+      const publicId = category.image
+        .split("/")
+        .slice(-2)
+        .join("/")
+        .split(".")[0];
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("Error deleting image from Cloudinary:", err);
+        return res
+          .status(500)
+          .json({ error: "Failed to delete image from Cloudinary" });
+      }
+    }
+
+    // Delete the category from the database
+    await Category.findByIdAndDelete(req.params.id);
+    res.json({ message: "Category and associated image deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
