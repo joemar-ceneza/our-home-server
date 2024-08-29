@@ -1,12 +1,12 @@
 const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const Category = require("../models/category");
-const upload = require("../middleware/multer");
+const categoryStorage = require("../middleware/multerCategory");
 
 const router = express.Router();
 
 // create new category with image upload
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", categoryStorage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -52,7 +52,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // update a category by id with image upload
-router.put("/:id", upload.single("image"), async (req, res) => {
+router.put("/:id", categoryStorage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -76,7 +76,7 @@ router.put("/:id", upload.single("image"), async (req, res) => {
       if (category.image) {
         const publicId = category.image
           .split("/")
-          .slice(-2)
+          .slice(-4)
           .join("/")
           .split(".")[0];
         try {
@@ -122,7 +122,7 @@ router.delete("/:id", async (req, res) => {
     if (category.image) {
       const publicId = category.image
         .split("/")
-        .slice(-2)
+        .slice(-4)
         .join("/")
         .split(".")[0];
       try {
