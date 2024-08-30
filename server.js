@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require("cors");
 const connectToDb = require("./config/connectToDb");
 const categoryRoutes = require("./routes/category");
+const productRoutes = require("./routes/product");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,13 +18,10 @@ app.use(express.json());
 // connect to database
 connectToDb();
 
-// define routes
-app.get("/", (req, res) => {
-  res.send("Hello from the MERN stack server!");
-});
-
 // use the category routes
 app.use("/api/categories", categoryRoutes);
+// use the product routes
+app.use("/api/products", productRoutes);
 
 // start the server
 app.listen(PORT, () => {
