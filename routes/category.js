@@ -1,12 +1,12 @@
 const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const Category = require("../models/category");
-const categoryStorage = require("../middleware/multerCategory");
+const { uploadCategoryImage } = require("../middleware/multer");
 
 const router = express.Router();
 
 // create new category with image upload
-router.post("/", categoryStorage.single("image"), async (req, res) => {
+router.post("/", uploadCategoryImage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -52,7 +52,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // update a category by id with image upload
-router.put("/:id", categoryStorage.single("image"), async (req, res) => {
+router.put("/:id", uploadCategoryImage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
