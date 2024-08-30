@@ -1,12 +1,12 @@
 const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const Product = require("../models/product");
-const upload = require("../middleware/multer");
+const { uploadProductImage } = require("../middleware/multer");
 
 const router = express.Router();
 
 // create new product with image upload
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", uploadProductImage.single("image"), async (req, res) => {
   try {
     const {
       name,
@@ -59,7 +59,7 @@ router.get("/", async (req, res) => {
 });
 
 // update a product by id with image upload
-router.put("/:id", upload.single("image"), async (req, res) => {
+router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
   try {
     const {
       name,
@@ -100,7 +100,7 @@ router.put("/:id", upload.single("image"), async (req, res) => {
       if (product.image) {
         const publicId = product.image
           .split("/")
-          .slice(-2)
+          .slice(-4)
           .join("/")
           .split(".")[0];
         try {
@@ -145,7 +145,7 @@ router.delete("/:id", async (req, res) => {
     if (product.image) {
       const publicId = product.image
         .split("/")
-        .slice(-2)
+        .slice(-4)
         .join("/")
         .split(".")[0];
       try {
