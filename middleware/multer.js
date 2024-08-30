@@ -2,14 +2,28 @@ const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
 
-const storage = new CloudinaryStorage({
+// configuration for category images
+const categoryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "e-commerce", // specify the folder in cloudinary
+    folder: "e-commerce/our-home/categories", // specify the folder in cloudinary
     allowedFormats: ["jpg", "png", "jpeg"],
   },
 });
 
-const upload = multer({ storage: storage });
+// middleware for category image uploads
+const uploadCategoryImage = multer({ storage: categoryStorage });
 
-module.exports = upload;
+// configuration for product images
+const productStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "e-commerce/our-home/products",
+    allowedFormats: ["jpg", "png", "jpeg"],
+  },
+});
+
+// middleware for category image uploads
+const uploadProductImage = multer({ storage: productStorage });
+
+module.exports = { uploadCategoryImage, uploadProductImage };
