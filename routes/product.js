@@ -61,19 +61,28 @@ router.get("/", async (req, res) => {
 // route to get products based on query parameters
 router.get("/products", async (req, res) => {
   try {
-    // extract query parameters
-    const { isNewProduct, isBSeller } = req.query;
+    // Extract query parameters
+    const { isNewProduct, isBSeller, slug } = req.query;
 
-    // build the filter object
+    // Build the filter object
     const filter = {};
     if (isNewProduct) {
-      filter.isNewProduct = isNewProduct === "true"; // convert to boolean
+      filter.isNewProduct = isNewProduct === "true"; // Convert to boolean
     }
     if (isBSeller) {
       filter.isBSeller = isBSeller === "true"; // Convert to boolean
     }
 
-    // fetch products based on filter
+    // If a slug is provided, find the product by slug
+    if (slug) {
+      const product = await Product.findOne({ slug });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      return res.json([product]); // Return product in an array to match frontend expectation
+    }
+
+    // Fetch products based on filter
     const products = await Product.find(filter);
     res.json(products);
   } catch (error) {
