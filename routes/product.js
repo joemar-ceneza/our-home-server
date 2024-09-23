@@ -90,6 +90,30 @@ router.get("/products", async (req, res) => {
   }
 });
 
+// route to fetch related products by category
+router.get("/products/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // fetch the product by slug
+    const product = await Product.findOne({ slug }).populate("category");
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // fetch related products based on the category
+    const relatedProducts = await Product.find({
+      category: product.category,
+      _id: { $ne: product._id }, // execute the current product
+    });
+
+    // respond with product details and related products
+    res.json({ product, relatedProducts });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // update a product by id with image upload
 router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
   try {
