@@ -75,16 +75,26 @@ router.get("/products", async (req, res) => {
 
     // If a slug is provided, find the product by slug
     if (slug) {
-      const product = await Product.findOne({ slug });
+      const product = await Product.findOne({ slug }).populate("category");
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      return res.json([product]); // Return product in an array to match frontend expectation
+      // Include category name in the returned product
+      return res.json([
+        {
+          ...product.toObject(), // Convert to plain object
+        },
+      ]); // Return product in an array to match frontend expectation
     }
 
-    // Fetch products based on filter
-    const products = await Product.find(filter);
-    res.json(products);
+    // Fetch products based on filter and populate category
+    const products = await Product.find(filter).populate("category");
+
+    // Include category names in the response
+    const productsWithCategory = products.map((product) => ({
+      ...product.toObject(), // Convert to plain object
+    }));
+    res.json(productsWithCategory);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
