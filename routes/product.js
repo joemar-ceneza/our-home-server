@@ -124,6 +124,33 @@ router.get("/products/:slug", async (req, res) => {
   }
 });
 
+// get featured products with pagination
+router.get("/featured", async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // current page
+  const pageSize = parseInt(req.query.pageSize) || 10; // default page size
+
+  try {
+    // find featured products
+    const products = await Product.find({ isFeatured: true })
+      .skip((page - 1) * pageSize) // skip previous pages results
+      .limit(pageSize); // limit results to page size
+
+    // get total count for pagination
+    const totalProducts = await Product.countDocuments({ isFeatured: true });
+
+    // calculate total number of pages
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    res.status(200).json({
+      products,
+      pagination: { currentPage: page, totalPages, pageSize, totalProducts },
+    });
+  } catch (error) {
+    console.error("Error fetching featured products: ", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 // update a product by id with image upload
 router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
   try {
