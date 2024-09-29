@@ -151,6 +151,19 @@ router.get("/featured", async (req, res) => {
   }
 });
 
+// route to get products with search functionality
+router.get("/search", async (req, res) => {
+  const { name } = req.query;
+  try {
+    const products = await Product.find({
+      name: new RegExp(name, "i"), // Case-insensitive search
+    });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // update a product by id with image upload
 router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
   try {
