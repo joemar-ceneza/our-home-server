@@ -53,10 +53,10 @@ router.get("/:id", async (req, res) => {
 
 // route to get products by category slug
 router.get("/categories/:slug", async (req, res) => {
+  const { slug } = req.params;
+
   try {
-    const category = await Category.findOne({ slug: req.params.slug }).populate(
-      "products"
-    );
+    const category = await Category.findOne({ slug }).populate("products");
 
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
