@@ -46,6 +46,11 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    quantity: {
+      type: Number,
+      required: true,
+      min: [1, "Quantity cannot be less than 1"],
+    },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category", // reference to the category model
