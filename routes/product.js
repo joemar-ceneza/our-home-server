@@ -17,6 +17,7 @@ router.post("/", uploadProductImage.single("image"), async (req, res) => {
       isBSeller,
       isNewProduct,
       isFeatured,
+      quantity,
       category,
     } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -31,6 +32,7 @@ router.post("/", uploadProductImage.single("image"), async (req, res) => {
       isBSeller,
       isNewProduct,
       isFeatured,
+      quantity,
       category,
     });
     const savedProduct = await newProduct.save();
@@ -176,6 +178,7 @@ router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
       isBSeller,
       isNewProduct,
       isFeatured,
+      quantity,
       category,
     } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -199,6 +202,7 @@ router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
     if (isBSeller) product.isBSeller = isBSeller;
     if (isNewProduct) product.isNewProduct = isNewProduct;
     if (isFeatured) product.isFeatured = isFeatured;
+    if (quantity) product.isFeatured = isFeatured;
     if (category) product.category = category;
 
     if (imageUrl) {
