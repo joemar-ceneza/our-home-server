@@ -23,6 +23,9 @@ router.post("/", async (req, res) => {
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/success`,
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
+      shipping_address_collection: {
+        allowed_countries: ["PH", "US", "GB"],
+      },
     });
 
     res.json({ stripeSession: session });
