@@ -11,13 +11,14 @@ router.post("/", async (req, res) => {
       payment_method_types: ["card"],
       line_items: cart.map((item) => ({
         price_data: {
-          currency: "usd",
+          currency: "php",
           product_data: {
             name: item.name,
+            images: [item.image],
           },
           unit_amount: item.regularPrice * 100,
         },
-        quantity: item.quantity,
+        quantity: item.amount,
       })),
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/success`,
