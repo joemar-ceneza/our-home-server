@@ -202,7 +202,7 @@ router.put("/:id", uploadProductImage.single("image"), async (req, res) => {
     if (isBSeller) product.isBSeller = isBSeller;
     if (isNewProduct) product.isNewProduct = isNewProduct;
     if (isFeatured) product.isFeatured = isFeatured;
-    if (quantity) product.isFeatured = isFeatured;
+    if (quantity) product.quantity = quantity;
     if (category) product.category = category;
 
     if (imageUrl) {
