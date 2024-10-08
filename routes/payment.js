@@ -16,7 +16,10 @@ router.post("/", async (req, res) => {
             name: item.name,
             images: [item.image],
           },
-          unit_amount: item.regularPrice * 100,
+          unit_amount:
+            item.isOnSale && item.salePrice > 0
+              ? item.salePrice * 100
+              : item.regularPrice * 100,
         },
         quantity: item.amount,
       })),
