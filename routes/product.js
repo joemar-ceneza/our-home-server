@@ -38,13 +38,13 @@ router.post("/", uploadProductImage.single("image"), async (req, res) => {
     const savedProduct = await newProduct.save();
     res.status(201).json(savedProduct);
   } catch (error) {
-    // delete the uploaded image from cloudinary if an error occurs
     if (req.file && req.file.path) {
-      const publicId = req.file.filename.split(".")[0]; // extract the public id from the filename
-      cloudinary.uploader.destroy(publicId, (error, result) => {
-        if (error)
-          console.error("Error deleting image from Cloudinary:", error);
-      });
+      const publicId = req.file.filename.split(".")[0];
+      try {
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error("Error deleting image from Cloudinary: ", error);
+      }
     }
     res.status(400).json({ error: error.message });
   }
