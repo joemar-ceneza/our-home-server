@@ -2,11 +2,12 @@ const express = require("express");
 const cloudinary = require("cloudinary").v2;
 const Category = require("../models/category");
 const { uploadCategoryImage } = require("../middleware/multer");
+const requireAdmin = require("../middleware/requireAdmin");
 
 const router = express.Router();
 
 // create new category with image upload
-router.post("/", uploadCategoryImage.single("image"), async (req, res) => {
+router.post("/", requireAdmin, uploadCategoryImage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -78,7 +79,7 @@ router.get("/categories/:slug", async (req, res) => {
 });
 
 // update a category by id with image upload
-router.put("/:id", uploadCategoryImage.single("image"), async (req, res) => {
+router.put("/:id", requireAdmin, uploadCategoryImage.single("image"), async (req, res) => {
   try {
     const { name, products } = req.body;
     const imageUrl = req.file ? req.file.path : undefined;
@@ -138,7 +139,7 @@ router.put("/:id", uploadCategoryImage.single("image"), async (req, res) => {
 });
 
 // delete a category by id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   try {
     // find the category by id
     const category = await Category.findById(req.params.id);
