@@ -13,9 +13,28 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // middleware
+// CLIENT_URL may hold a comma-separated allowlist. If it's unset we allow all
+// origins (the catalog reads are public anyway) so a missing env var can never
+// silently break product loading. localhost is always allowed for development.
+const allowedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      const isLocalhost = origin && /^http:\/\/localhost(:\d+)?$/.test(origin);
+      if (
+        allowedOrigins.length === 0 ||
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        isLocalhost
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
   })
 );
 app.use(express.json());
